@@ -1,0 +1,35 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "name": "local dev",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "tauri", "dev"
+      ],
+    },
+    {
+      "type": "node",
+      "name": "android dev",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "tauri", "android", "dev"
+      ],
+    },
+    {
+      "type": "node",
+      "name": "ios dev",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "tauri", "ios", "dev", "iphone 16 pro max"
+      ],
+    },
+  ]
+}
