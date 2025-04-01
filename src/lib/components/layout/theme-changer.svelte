@@ -127,7 +127,7 @@
           </div>
           <div class="grid gap-2">
             <Label for="r">Border Radius</Label>
-            <Slider type="single" id="r" bind:value={r} max={1} step={0.01} />
+            <Slider type="single" id="r" bind:value={r} max={1} step={0.25} />
             <div class="text-sm text-muted-foreground">
               {r.toFixed(2)}
             </div>
