@@ -83,3 +83,44 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(respond());
 });
+
+self.addEventListener('notificationclick', event => {
+  console.log('[Service Worker] Notification click received:', event.notification);
+
+  event.notification.close();
+
+  const urlToOpen = event.notification?.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+
+self.addEventListener('push', async (event) => {
+  const data = event.data?.text() ?? '데이터 없음';
+
+  try {
+    await event.waitUntil(
+      self.registration.showNotification('푸시 도착!', {
+        body: data,
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/icon-192x192.png',
+      })
+    );
+    console.log('[SW] push 도착:', data);
+  }
+  catch (err) {
+    console.error('[SW] 푸시 알림 오류:', err);
+  }
+});

@@ -10,7 +10,8 @@
       "request": "launch",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
-        "dev"
+        "dev",
+        "--open"
       ],
     },
     {

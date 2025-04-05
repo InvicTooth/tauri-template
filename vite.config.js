@@ -38,13 +38,27 @@ export default defineConfig(async () => ({
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable', // 마스크 가능한 아이콘
+            purpose: 'maskable', // 마스크 가능한 아이콘
           }
         ],
+        screenshots: [
+          {
+            src: "/screenshots/home-desktop.png",
+            sizes: "1280x720",
+            type: "image/png",
+            form_factor: "wide"
+          },
+          {
+            src: "/screenshots/home-mobile.png",
+            sizes: "540x720",
+            type: "image/png",
+            form_factor: "narrow"
+          }
+        ]
       },
       // 서비스 워커 설정 (Workbox 사용 시)
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], // 캐싱할 파일 패턴
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,webp,ico}'], // 캐싱할 파일 패턴
         runtimeCaching: [ // 런타임 캐싱 전략
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
