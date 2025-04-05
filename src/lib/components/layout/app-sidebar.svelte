@@ -15,7 +15,7 @@
 		user: {
 			name: "shadcn",
 			email: "m@example.com",
-			avatar: "/avatars/shadcn.jpg",
+			avatar: "/icons/icon-192x192.png",
 		},
 		teams: [
 			{

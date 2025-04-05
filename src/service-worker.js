@@ -84,9 +84,25 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(respond());
 });
 
-self.addEventListener('notificationclick', event => {
-  console.log('[Service Worker] Notification click received:', event.notification);
+self.addEventListener('push', (event) => {
+  const data = event.data.json() || { title: '🔔 새 알림', body: '뭔가 도착했어요.', url: '/' };
 
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png',
+    data: { url: data.url },
+  });
+
+  // Broadcast to app
+  self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clients => {
+    for (const client of clients) {
+      client.postMessage({ type: 'NEW_NOTIFICATION', payload: data });
+    }
+  });
+});
+
+self.addEventListener('notificationclick', event => {
   event.notification.close();
 
   const urlToOpen = event.notification?.data?.url || '/';
@@ -104,23 +120,4 @@ self.addEventListener('notificationclick', event => {
       }
     })
   );
-});
-
-
-self.addEventListener('push', async (event) => {
-  const data = event.data?.text() ?? '데이터 없음';
-
-  try {
-    await event.waitUntil(
-      self.registration.showNotification('푸시 도착!', {
-        body: data,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-192x192.png',
-      })
-    );
-    console.log('[SW] push 도착:', data);
-  }
-  catch (err) {
-    console.error('[SW] 푸시 알림 오류:', err);
-  }
 });
