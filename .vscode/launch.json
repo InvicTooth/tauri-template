@@ -6,6 +6,15 @@
   "configurations": [
     {
       "type": "node",
+      "name": "web dev",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev"
+      ],
+    },
+    {
+      "type": "node",
       "name": "local dev",
       "request": "launch",
       "runtimeExecutable": "pnpm",

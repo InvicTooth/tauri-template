@@ -1,13 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tauri + SvelteKit + Typescript App</title>
-    %sveltekit.head%
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#ffffff" /> <!-- vite.config.js의 theme_color와 일치 -->
+  <link rel="manifest" href="/manifest.webmanifest" /> <!-- vite-plugin-pwa가 생성 -->
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" /> <!-- iOS용 아이콘 (선택 사항) -->
+
+  <title>Tauri + SvelteKit + Typescript App</title>
+  %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover">
-    <div style="display: contents">%sveltekit.body%</div>
-  </body>
+
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

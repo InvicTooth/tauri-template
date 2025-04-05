@@ -1,13 +1,83 @@
 import { defineConfig } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import tailwindcss from '@tailwindcss/vite';
 
-// @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [sveltekit(), tailwindcss()],
+  plugins: [
+    sveltekit(),
+    tailwindcss(),
+    SvelteKitPWA({ // Or VitePWA if using 'vite-plugin-pwa' directly
+      registerType: 'autoUpdate', // 서비스 워커 자동 업데이트
+      injectRegister: 'auto', // 서비스 워커 등록 스크립트 자동 주입
+      manifest: {
+        name: 'saas template kor', // 앱 이름
+        short_name: 'stk', // 짧은 앱 이름
+        description: 'Saas Template App for Tauri and Svelte', // 앱 설명
+        theme_color: '#ffffff', // 테마 색상
+        background_color: '#ffffff', // 배경 색상
+        display: 'standalone', // PWA 디스플레이 모드
+        scope: '/',
+        start_url: '/', // 앱 시작 URL
+        icons: [
+          // 다양한 크기의 앱 아이콘 정의
+          {
+            src: '/icons/icon-192x192.png', // static 폴더 기준 경로
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable', // 마스크 가능한 아이콘
+          }
+        ],
+      },
+      // 서비스 워커 설정 (Workbox 사용 시)
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], // 캐싱할 파일 패턴
+        runtimeCaching: [ // 런타임 캐싱 전략
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
+      }
+    }),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
@@ -20,10 +90,10 @@ export default defineConfig(async () => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
+        protocol: "ws",
+        host,
+        port: 1421,
+      }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
