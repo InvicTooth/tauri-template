@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.49.4",
     "@tauri-apps/api": "^2.4.1",
     "@tauri-apps/plugin-opener": "^2.2.6",
+    "localforage": "^1.10.0",
     "lucide-svelte": "^0.487.0"
   },
   "devDependencies": {
@@ -37,11 +38,11 @@
     "formsnap": "^2.0.0",
     "mode-watcher": "^0.5.1",
     "paneforge": "1.0.0-next.4",
-    "svelte": "^5.25.6",
+    "svelte": "^5.25.7",
     "svelte-check": "^4.1.5",
     "svelte-motion": "^0.12.2",
     "svelte-sonner": "^0.3.28",
-    "sveltekit-superforms": "^2.24.0",
+    "sveltekit-superforms": "^2.24.1",
     "tailwind-merge": "^3.1.0",
     "tailwind-variants": "^1.0.0",
     "tailwindcss": "^4.1.3",

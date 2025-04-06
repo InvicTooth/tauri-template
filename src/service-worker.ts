@@ -3,8 +3,10 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
+declare const self: ServiceWorkerGlobalScope;
+export { };
 import { build, files, version } from '$service-worker';
+import { syncWithServer } from './lib/stores/sync-queue.js';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
@@ -14,7 +16,12 @@ const ASSETS = [
   ...files  // everything in `static`
 ];
 
-self.addEventListener('install', (event) => {
+self.onmessage = (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING')
+    self.skipWaiting()
+};
+
+self.oninstall = event => {
   // Create a new cache and add all files to it
   async function addFilesToCache() {
     const cache = await caches.open(CACHE);
@@ -22,9 +29,9 @@ self.addEventListener('install', (event) => {
   }
 
   event.waitUntil(addFilesToCache());
-});
+};
 
-self.addEventListener('activate', (event) => {
+self.onactivate = event => {
   // Remove previous cached data from disk
   async function deleteOldCaches() {
     for (const key of await caches.keys()) {
@@ -33,9 +40,9 @@ self.addEventListener('activate', (event) => {
   }
 
   event.waitUntil(deleteOldCaches());
-});
+};
 
-self.addEventListener('fetch', (event) => {
+self.onfetch = event => {
   // ignore POST requests etc
   if (event.request.method !== 'GET') return;
 
@@ -82,10 +89,10 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(respond());
-});
+};
 
-self.addEventListener('push', (event) => {
-  const data = event.data.json() || { title: '🔔 새 알림', body: '뭔가 도착했어요.', url: '/' };
+self.onpush = event => {
+  const data = event.data?.json() || { title: '🔔 새 알림', body: '뭔가 도착했어요.', url: '/' };
 
   self.registration.showNotification(data.title, {
     body: data.body,
@@ -100,24 +107,48 @@ self.addEventListener('push', (event) => {
       client.postMessage({ type: 'NEW_NOTIFICATION', payload: data });
     }
   });
-});
+};
 
-self.addEventListener('notificationclick', event => {
+self.onnotificationclick = event => {
   event.notification.close();
 
   const urlToOpen = event.notification?.data?.url || '/';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
       for (const client of clientList) {
         if (client.url === urlToOpen && 'focus' in client) {
           return client.focus();
         }
       }
 
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(urlToOpen);
       }
     })
   );
+};
+
+self.addEventListener('sync', (event: any) => {
+  console.log('[SW] 📦 sync event received:', event.tag);
+  switch (event.tag) {
+    case 'sync-queue':
+      event.waitUntil(syncWithServer());
+      break;
+    default:
+      console.warn('[SW] Unknown sync event:', event.tag);
+      break;
+  }
+});
+
+self.addEventListener('periodicsync', (event: any) => {
+  console.log('[SW] 📦 periodicsync event received:', event.tag);
+  switch (event.tag) {
+    case 'periodic-sync-queue':
+      event.waitUntil(syncWithServer());
+      break;
+    default:
+      console.warn('[SW] Unknown periodic sync event:', event.tag);
+      break;
+  }
 });

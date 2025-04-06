@@ -3,6 +3,7 @@
   import ThemeChanger from "../lib/components/layout/theme-changer.svelte";
   import { Input } from "../lib/components/ui/input";
   import { Button } from "../lib/components/ui/button";
+  import { saveQueue } from "../lib/stores/sync-queue";
 
   let name = $state("");
   let greetMsg = $state("");
@@ -41,6 +42,7 @@
     <Button type="submit">Greet</Button>
   </form>
   <p>{greetMsg}</p>
+  <Button class="w-20" onclick={saveQueue}>Save Queue</Button>
 </main>
 
 <style>

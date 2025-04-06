@@ -10,9 +10,9 @@ export default defineConfig(async () => ({
   plugins: [
     sveltekit(),
     tailwindcss(),
-    SvelteKitPWA({ // Or VitePWA if using 'vite-plugin-pwa' directly
-      registerType: 'autoUpdate', // 서비스 워커 자동 업데이트
-      injectRegister: 'auto', // 서비스 워커 등록 스크립트 자동 주입
+    SvelteKitPWA({
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
       manifest: {
         name: 'saas template kor', // 앱 이름
         short_name: 'stk', // 짧은 앱 이름

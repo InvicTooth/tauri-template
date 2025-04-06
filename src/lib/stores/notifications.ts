@@ -5,21 +5,11 @@ export const notificationCount = writable(0);
 let originalTitle = document.title;
 let originalFavicon = '/favicon.png';
 
-// 제목에 알림 카운트 뱃지 표시
-function setTitleBadge() {
-  notificationCount.update((value) => value + 1);
-  const count = get(notificationCount);
-  if (count > 0) {
-    document.title = `(${count}) ${originalTitle}`;
-    addBadge();
-  } else {
-    document.title = originalTitle;
-    resetFavicon();
-  }
-}
+function reset() {
+  notificationCount.set(0);
+  document.title = originalTitle;
+  navigator.clearAppBadge();
 
-// 파비콘 교체
-function resetFavicon() {
   let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
   if (!link) {
     link = document.createElement('link');
@@ -30,7 +20,12 @@ function resetFavicon() {
   link.href = originalFavicon;
 }
 
-function addBadge() {
+function setBadge() {
+  notificationCount.update((count) => count + 1);
+  const count = get(notificationCount);
+  navigator.setAppBadge(count);
+  document.title = `(${count}) ${originalTitle}`;
+
   const canvas = document.createElement('canvas');
   const img = document.createElement('img');
   img.src = originalFavicon;
@@ -57,15 +52,13 @@ function addBadge() {
 export function listenToVisibility() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'hidden') {
-      notificationCount.set(0);
-      document.title = originalTitle;
-      resetFavicon();
+      reset();
     }
   });
 
   navigator.serviceWorker?.addEventListener('message', (event) => {
     if (event.data?.type === 'NEW_NOTIFICATION') {
-      setTitleBadge();
+      setBadge();
     }
   });
 }
